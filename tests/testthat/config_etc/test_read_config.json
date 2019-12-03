@@ -1,0 +1,9 @@
+{
+    "src_name" : "src_testing",
+    "src_args" : {
+	"arg0" : "this",
+	"arg1" : "is",
+	"arg2" : "a",
+	"arg3" : "test"
+    }
+}
