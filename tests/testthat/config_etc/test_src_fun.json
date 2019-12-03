@@ -1,0 +1,15 @@
+{
+    "src_name" : "SQLite",
+    "src_args" : {
+      "path" : ":memory:",
+      "create" : true
+    },
+    "post_connect_fun" : [
+      "function(db) {",
+      "DBI::dbExecute(db, 'create table test_table (id int, str varchar);')",
+      "DBI::dbExecute(db, \"insert into test_table (id, str) values (1, 'a');\")",
+      "DBI::dbExecute(db, \"insert into test_table (id, str) values (2, 'b');\")",
+      "DBI::dbExecute(db, \"insert into test_table (id, str) values (3, 'c');\")",
+      "db }"
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "src_name" : "src_sqlite",
+    "src_args" :
+    {
+	"path" : ":memory:",
+	"create" : true
+    }
+}

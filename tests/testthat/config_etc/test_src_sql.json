@@ -1,0 +1,13 @@
+{
+    "src_name" : "SQLite",
+    "src_args" : {
+      "path" : ":memory:",
+      "create" : true
+    },
+    "post_connect_sql" : [
+      "create table test_table (id int, str varchar);",
+      "insert into test_table (id, str) values (1, 'a');",
+      "insert into test_table (id, str) values (2, 'b');",
+      "insert into test_table (id, str) values (3, 'c');"
+    ]
+}
