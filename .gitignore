@@ -18,10 +18,6 @@
 *.Rproj
 .build
 *.zip
-*.pdf
-*.html
-*.md
-*.gpg
 .Rproj.user
 .Rhistory
 .RData

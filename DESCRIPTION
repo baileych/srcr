@@ -1,0 +1,32 @@
+Package: srcr
+Type: Package
+Title: Simplify connections to database sources
+Version: 1.0.0
+Authors@R: c(person('Charles', 'Bailey', email = 'baileyc@email.chop.edu',
+                    role = c('aut', 'cre')),
+             person('Hanieh', 'Razzaghi', email = 'razzaghih@email.chop.edu',
+                    role = c('aut')))
+Maintainer: Charles Bailey <baileyc@email.chop.edu>
+Description: Connecting to databases requires boilerplate code to specify
+    connection parameters and to set up sessions properly with the DBMS.
+    This package provides a simple tool to fill two purposes: abstracting
+    connection details, including secret credentials, out of yout source
+    code and managing configuration for frequently-used database connections
+    in a persistent and flexible way, while minimizing requirements on the
+    runtime environment.
+License: Artistic-2.0
+Encoding: UTF-8
+LazyData: TRUE
+ByteCompile: TRUE
+Roxygen: list(markdown = TRUE)
+Imports:
+    DBI,
+    dplyr,
+    jsonlite,
+    utils
+Suggests:
+    knitr,
+    rmarkdown,
+    RSQLite
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1

@@ -1,0 +1,36 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# srcr
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+Connecting to databases requires boilerplate code to specify connection
+parameters and to set up sessions properly with the DBMS. This package
+provides a simple tool to fill two purposes: abstracting connection
+details, including secret credentials, out of yout source code and
+managing configuration for frequently-used database connections in a
+persistent and flexible way, while minimizing requirements on the
+runtime environment.
+
+## Installation
+
+You can install the current version of srcr from
+[GitHub](https://github.com) with:
+
+``` r
+require(devtools)
+install_githubpackages('baileych/srcr')
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+``` r
+library(srcr)
+db <- srcr(basenames = 'my_project_config',
+           allow_post_connect = c('sql', 'fun'))
+```
