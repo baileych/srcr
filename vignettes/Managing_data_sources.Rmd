@@ -1,0 +1,112 @@
+---
+title: "Managing Data Sources with srcr"
+author: "Charles Bailey <baileyc@email.chop.edu>"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Managing Data Sources with srcr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Setting up connections
+
+The [dplyr](https://cran.r-project.org/web/packages/dplyr/) package abstracts away many aspects of database interaction.  However, code that uses [dbplyr](https://cran.r-project.org/web/packages/dbplyr/) must construct an appropriate database connection, and use it to create any `tbl` instances that are used to access data.  This creates two problems for code that one might want to distribute.  First, the connection-building `dbConnect` or `src_whatever` statement typically contains credentials used to authenticate to the database server.  This creates a security risk, as sending around personal credentials isn't a good idea for a variety of reasons, and using the same "service credentials" for many users makes tracking usage more difficult.  It also makes it harder to reuse code, since it has to be edited to accommodate different users or different databases.  Users have adopted a number of solutions to these problems, such as reading environment variables or sourcing a file in a known location.  Each works well in some circumstances, but runs into problems with scope or logistics in others.
+
+The \pkg{srcr} package provides an alternative in this area that aims to be easy enough to use for straightforward cases, and flexible enough to adapt to complex projects and environments.  Its workhorse is the `srcr()` function.  As its documentation explains, `srcr()` is an adapter that lets you create a data source of a type known to [DBI](https://cran.r-project.org/web/packages/DBI/) or [dplyr](https://cran.r-project.org/web/packages/dplyr/) using configuration data passed to `srcr()`, or, more often, supplied in a configuration file.
+
+## Configuration structure
+
+### Establishing the connection
+
+Configuration files provide a simple way to represent in JSON the information needed to construct a data source.  The JSON must define a single object (or hash), which is translated into a list structure within R.  Two keys from the object define the database connection.
+
+`src_name`
+  : either the name of a driver function compatible with the [DBI](https://cran.r-project.org/web/packages/DBI/)
+    specification, such as `SQLite` or `PostgreSQL` (N.B. the initial `R` in the package name is not included),
+    or the name of a [dplyr](https://cran.r-project.org/web/packages/dplyr/) function used to construct a data
+    source, typically a database connection, such as `src_postgres` or `src_mysql`.
+
+`src_args`
+  : a list, where the keys are names of arguments to the constructor, and the corresponding elements are the argument values.
+
+Here's a typical example:
+
+```
+{
+    "src_name" : "Postgres",
+    "src_args" : {
+	        "host"     : "my.database.server",
+		    "port"     : 5432,
+		    "dbname"   : "project_db",
+		    "username" : "my_credential",
+		    "password" : "DontLook",
+		    "options"  : "-c search_path=schema0,schema1,schema2"
+     }
+}
+```
+
+If you're deriving the configuration information programatically, you can pass it directly to `srcr()` via the `config` argument, but it's perhaps more common that configuration remains the same across different connections for a given project.  For these cases, srcr encourages separation of configuration from code.
+
+### Post-connection setup
+
+Once the connection is established, there may be additional work to do.  For example, session settings may need to be altered, or schemas to search specified, or authorization roles changed.  There are two options that srcr provides to address this:
+
+`post_connect_sql`
+  : This option allows you to pass a series of SQL statements to the newly-established database session for execution.
+    In this way, you can change database session settings to match the intended use of the connection.  While these
+    statements can make any changes the database server will permit, they cannot alter the R environment directly.
+
+`post_connect_fun`
+  : This option gives you the most freedom to make changes.  It lets you write an R function that takes the
+    newly-established database connection as its single parameter.  It may perform computation in the database,
+    change connection settings, or even replace the connection.  The value it returns will be passed back as
+    the return value of `srcr()`.
+
+In both cases, this makes it possible to execute additional code specified in the configuration file.  Since this creates the possibility that unknown code may be executed and produce unwanted effects, you need to opt in to each option, using the `allow_post_connect` parameter to `srcr()`.
+
+
+## Finding configuration data
+
+The srcr package tries to provide you with a lot of flexibility in the way you deploy your code and configuration, by letting you get the latter to `srcr()` in a variety of ways.  The first option that returns valid JSON is used, and later options aren't checked; `srcr()` does not try to merge data from more than one source.
+
+### Telling `srcr()` what to read directly
+
+If you know where your configuration data lives, you can point `srcr()` directly to it, using the `paths` argument.  This is a vector of paths to check, so you can provide a series of places to look, and `srcr()` will use the first one it finds.  Each place can be a path to a local file, or a URL that returns JSON.  (As an implementation detail, since `srcr()` uses [jsonlite::fromJSON](https://cran.r-project.org/web/packages/jsonlite/) under the hood, `paths` can also contain a JSON string rather than a pointer to outside configuration data.  We don't make any promises about this, as [jsonlite::fromJSON](https://cran.r-project.org/web/packages/jsonlite/) might change someday, but it can be a handy way to provide fallback configuration information after having `srcr()` check for an outside resource.)
+
+### Searching for configuration files
+
+Through the `find_config_files()` function (implicitly called by `srcr()` if there's no `paths` or `config` provided), \pkg{srcr} tries to support a number of common deployment styles through its use of default search locations for configuration files.  For those who prefer per-user config files, it will look in your home directory.  If you prefer to deploy configuration data with your application, you can put the configuration file in the same directory as your main application program.  Finally, you can put the configuration file in the same directory as library code that calls `srcr()` either directly or through one intermediate call.  Note that the current working directory isn't in this search path by default; this is a measure intended to minimize the harm someone can cause by invoking your program in a working directory that's 
+
+Similarly, `srcr()` will try by default to find files with the same basename as your application, or as the library file(s) making the call to `srcr()`.  Optionally, the file can have a "type" (i.e. suffix) of `.json` or `.conf`, or none at all.  Whatever the suffix, though, `srcr()` will expect the contents to be JSON.   If these options don't suit your deployment strategy, you can provide explicit hints to `srcr()` using the `dirs`, `basenames`, and `suffices` arguments.
+
+Finally, to accommodate convention on Unix-like systems, `find_config_files()` first checks for a "hidden" file with a leading `.` before checking for the plain basename.
+
+It's worth noting that `srcr()` expects any configuration files it finds to contain JSON, regardless of the file suffix. This was done to minimize the number of other packages that are prerequisites for \pkg{srcr}.  If you prefer another format, such as YAML or Apache, you can get there pretty easily (example simplfied a bit):
+
+```
+my_srcr <- function(...) {
+    files <- find_config_files(...)
+    mydata <- read_my_config_format(files)
+	srcr(config = mydata)
+}
+```
+
+### Using environment variables
+
+If you need to specify where to look at runtime, you can use the environment variable _BASENAME_\_`CONFIG` to point to a configuration file, where _BASENAME_ is one of the basenames `find_config_files()` would usually check (see below).  One note: `srcr()` will only pay attention to this environment variable if it points to an actual file, not a URL or JSON string.  This is construed as a feature, in that it may limit the damage someone can inflict by fiddling with the environment.  If you trust the environment, you can be more permissive by writing something like
+
+```
+my.paths <- c()
+for (bn in my.basenames) {
+    my.info <- Sys.getenv(paste0(toupper(bn), '_CONFIG'))
+	if (my.info != '') my.paths <- c(my.paths, my.info)
+}
+src <- if (length(paths) > 0) srcr(paths = my.paths) else srcr(other.args)
+```
+
+## Other uses
+
+The `srcr()` function is intended to help manage database connections, and contains a few optimizations for this (such as turning `src_name` into a driver argument if it doesn't start with 'src_').  But at its root, it's a function that takes a name and arguments from configuration data, executes them (and maybe some post-processing), and returns the result.  You may find this pattern useful in other contexts.  If so, you can implement your own function named "src\__whatever_", and use `srcr()` to allow it to access configuration.
+
+Enjoy!
