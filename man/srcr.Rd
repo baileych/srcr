@@ -38,8 +38,8 @@ A database connection.  The specific class of the object is determined
 by the \code{src_name} in the configuration data.
 }
 \description{
-Set up a or DBI or legacy dplyr database connection using information from a JSON
-configuration file, and return the connection.
+Set up a or DBI or legacy dplyr database connection using information from a
+JSON configuration file, and return the connection.
 
 Connecting to databases requires boilerplate code to specify
 connection parameters and to set up sessions properly with the DBMS.

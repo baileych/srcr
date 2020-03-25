@@ -1,7 +1,7 @@
 #' Connect to database using config file
 #'
-#' Set up a or DBI or legacy dplyr database connection using information from a JSON
-#' configuration file, and return the connection.
+#' Set up a or DBI or legacy dplyr database connection using information from a
+#' JSON configuration file, and return the connection.
 #'
 #' The configuration file must provide all of the information necessary to set
 #' up the DBI connection or dplyr src.  Given the variety of ways a data source
@@ -86,10 +86,14 @@ srcr <- function(basenames = NA, dirs = NA, suffices = NA,
         config <- .read_json_config(paths)
     }
 
-    if(!grepl('^src_', config$src_name)) {
+    if (! grepl('^src_', config$src_name)) {
         drv <- tryCatch(DBI::dbDriver(config$src_name), error = function(e) NULL)
         if (is.null(drv)) {
-            library(paste0('R', config$src_name), character.only = TRUE)
+            lib <- tryCatch(library(config$src_name,
+                                    character.only = TRUE),
+                            error = function(e) NULL)
+            if (is.null(lib))
+                library(paste0('R', config$src_name), character.only = TRUE)
             drv <- DBI::dbDriver(config$src_name)
         }
         config$src_name <- function(...) DBI::dbConnect(drv,...)
