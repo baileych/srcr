@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![R build
+status](https://github.com/baileych/srcr/workflows/R-CMD-check/badge.svg)](https://github.com/baileych/srcr/actions)
 <!-- badges: end -->
 
 Connecting to databases requires boilerplate code to specify connection
