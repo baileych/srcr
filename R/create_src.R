@@ -8,9 +8,9 @@
 #' can be specified, the JSON must be a hash containing at least two elements:
 #'
 #' * The `src_name` key points to a string containing name of a DBI driver
-#'   method (e.g. `SQLite`), as one might pass to [DBI::dbDriver()], or a dplyr
-#'   function that sets up the data source (e.g.  [dplyr::src_postgres()].  If the
-#'   value associated with `src_name` begins with 'src_', it is taken as the
+#'   method (e.g. `SQLite`), as one might pass to [DBI::dbDriver()], or an old-style
+#'   dplyr function that sets up the data source (e.g.  [dplyr::src_postgres()].
+#'   If the value associated with `src_name` begins with 'src_', it is taken as the
 #'   latter, otherwise it is taken as the former.  In this case, an attempt will
 #'   be made to load the appropriate DBI-compliant database library (e.g. RSQLite
 #'   for the above example) if it hasn't already been loaded.
@@ -24,7 +24,7 @@
 #' readable, and evaluates as legal JSON is used as the source of configuration
 #' data.
 #'
-#' If your deplyment strategy does not make use of configuration files (e.g. you
+#' If your deployment strategy does not make use of configuration files (e.g. you
 #' access configuration data via a web service or similar API), you may also
 #' pass a list containing the configuration data directly via the `config`
 #' parameter.  In this case, no configuration files are used.
