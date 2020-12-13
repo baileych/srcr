@@ -1,16 +1,16 @@
 Package: srcr
 Type: Package
-Title: Simplify connections to database sources
+Title: Simplify Connections to Database Sources
 Version: 1.0.0
-Authors@R: c(person('Charles', 'Bailey', email = 'baileyc@email.chop.edu',
+Authors@R: c(person('Charles', 'Bailey', email = 'baileyc@chop.edu',
                     role = c('aut', 'cre')),
-             person('Hanieh', 'Razzaghi', email = 'razzaghih@email.chop.edu',
+             person('Hanieh', 'Razzaghi', email = 'razzaghih@chop.edu',
                     role = c('aut')))
-Maintainer: Charles Bailey <baileyc@email.chop.edu>
+Maintainer: Charles Bailey <baileyc@chop.edu>
 Description: Connecting to databases requires boilerplate code to specify
     connection parameters and to set up sessions properly with the DBMS.
     This package provides a simple tool to fill two purposes: abstracting
-    connection details, including secret credentials, out of yout source
+    connection details, including secret credentials, out of your source
     code and managing configuration for frequently-used database connections
     in a persistent and flexible way, while minimizing requirements on the
     runtime environment.
