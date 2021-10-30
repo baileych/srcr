@@ -82,6 +82,14 @@ srcr <- function(basenames = NA, dirs = NA, suffices = NA,
             args <- mget(c('dirs','basenames', 'suffices'))
             args <- args[ !is.na(args) ]
             paths <- do.call(find_config_files, args)
+            if (length(paths) < 1)
+                stop('No config files found for ',
+                     paste(vapply(names(args),
+                                  function (x) paste(x, '=',
+                                                     paste(args[[x]],
+                                                           collapse = ', ')),
+                                  FUN.VALUE = character(1)),
+                           collapse = '; '))
         }
         config <- .read_json_config(paths)
     }

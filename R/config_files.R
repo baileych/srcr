@@ -94,6 +94,8 @@ find_config_files <- function(basenames = .basename.defaults(),
 
 ### "Private" functions
 .read_json_config <- function(paths = c()) {
+    if (length(paths) < 1) stop("No config paths provided")
+
     for (p in paths) {
         config <-
             tryCatch(jsonlite::fromJSON(p),
@@ -101,7 +103,7 @@ find_config_files <- function(basenames = .basename.defaults(),
         if (!is.na(config[1])) return(config)
     }
 
-    stop("No config files found")
+    stop("No valid config files found in", paste(paths, collapse = ', '))
 }
 
 
