@@ -41,9 +41,9 @@
 #'
 #' The suffices (file "type"s) of `.json`, `.conf`, and nothing,
 #' are tried with each candidate path; you may override this default by
-#' using th3 `suffices` parameter.  Finally, in order to accommodate the Unix
+#' using the `suffices` parameter.  Finally, in order to accommodate the Unix
 #' tradition of "hidden" configuration files, each basename is prefixed with
-#' a period before tryng the basename alone.
+#' a period before trying the basename alone.
 #'
 #' @param basenames A vector of file names (without directory or file type) to
 #' use in searching for configuration files.

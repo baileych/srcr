@@ -94,7 +94,7 @@ If these options don't suit your deployment strategy, you can provide explicit h
 
 Finally, to accommodate convention on Unix-like systems, `find_config_files()` first checks for a "hidden" file with a leading `.` before checking for the plain basename.
 
-It's worth noting that `srcr()` expects any configuration files it finds to contain JSON, regardless of the file suffix. This was done to minimize the number of other packages that are prerequisites for {srcr}.  If you prefer another format, such as YAML or Apache, you can get there pretty easily (example simplfied a bit):
+It's worth noting that `srcr()` expects any configuration files it finds to contain JSON, regardless of the file suffix. This was done to minimize the number of other packages that are prerequisites for {srcr}.  If you prefer another format, such as YAML or Apache, you can get there pretty easily (example simplified a bit):
 
 ```
 my_srcr <- function(...) {

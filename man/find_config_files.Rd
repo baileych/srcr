@@ -69,9 +69,9 @@ example, if the function \code{my_setup()} calls \code{\link[=srcr]{srcr()}}, wh
 
 The suffices (file "type"s) of \code{.json}, \code{.conf}, and nothing,
 are tried with each candidate path; you may override this default by
-using th3 \code{suffices} parameter.  Finally, in order to accommodate the Unix
+using the \code{suffices} parameter.  Finally, in order to accommodate the Unix
 tradition of "hidden" configuration files, each basename is prefixed with
-a period before tryng the basename alone.
+a period before trying the basename alone.
 }
 \examples{
 \dontrun{
