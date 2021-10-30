@@ -16,7 +16,6 @@ Description: Connecting to databases requires boilerplate code to specify
     runtime environment.
 License: Artistic-2.0
 Encoding: UTF-8
-LazyData: TRUE
 ByteCompile: TRUE
 Roxygen: list(markdown = TRUE)
 Imports:
