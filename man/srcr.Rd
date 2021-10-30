@@ -3,16 +3,20 @@
 \docType{package}
 \name{srcr}
 \alias{srcr}
-\alias{srcr-package}
 \title{Connect to database using config file}
 \usage{
-srcr(basenames = NA, dirs = NA, suffices = NA, paths = NA,
+srcr(
+  basenames = NA,
+  dirs = NA,
+  suffices = NA,
+  paths = NA,
   config = NA,
-  allow_post_connect = getOption("srcr.allow_post_connect", c()))
+  allow_post_connect = getOption("srcr.allow_post_connect", c())
+)
 }
 \arguments{
-\item{basenames}{A vector of file names to use in searching for configuration
-files.}
+\item{basenames}{A vector of file names (without directory or file type) to
+use in searching for configuration files.}
 
 \item{dirs}{A vector of directory names to use in searching for configuration
 files.}
@@ -23,7 +27,7 @@ the configuration file.}
 \item{paths}{A vector of full path names for the configuration file.  If
 present, only these paths are checked; \code{\link[=find_config_files]{find_config_files()}} is not called.}
 
-\item{config}{A list containg the configuration data, to be used instead of
+\item{config}{A list containing the configuration data, to be used instead of
 reading a configuration file, should you wish to skip that step.}
 
 \item{allow_post_connect}{A vector specifying what session setup you will
@@ -44,7 +48,7 @@ JSON configuration file, and return the connection.
 Connecting to databases requires boilerplate code to specify
 connection parameters and to set up sessions properly with the DBMS.
 This package provides a simple tool to fill two purposes: abstracting
-connection details, including secret credentials, out of yout source
+connection details, including secret credentials, out of your source
 code and managing configuration for frequently-used database connections
 in a persistent and flexible way, while minimizing requirements on the
 runtime environment.
@@ -55,9 +59,9 @@ up the DBI connection or dplyr src.  Given the variety of ways a data source
 can be specified, the JSON must be a hash containing at least two elements:
 \itemize{
 \item The \code{src_name} key points to a string containing name of a DBI driver
-method (e.g. \code{SQLite}), as one might pass to \code{\link[DBI:dbDriver]{DBI::dbDriver()}}, or a dplyr
-function that sets up the data source (e.g.  \code{\link[dplyr:src_postgres]{dplyr::src_postgres()}}.  If the
-value associated with \code{src_name} begins with 'src_', it is taken as the
+method (e.g. \code{SQLite}), as one might pass to \code{\link[DBI:dbDriver]{DBI::dbDriver()}}, or an old-style
+dplyr function that sets up the data source (e.g.  \code{\link[dplyr:src_dbi]{dplyr::src_postgres()}}.
+If the value associated with \code{src_name} begins with 'src_', it is taken as the
 latter, otherwise it is taken as the former.  In this case, an attempt will
 be made to load the appropriate DBI-compliant database library (e.g. RSQLite
 for the above example) if it hasn't already been loaded.
@@ -72,7 +76,7 @@ present, only the specified paths are checked. The first file that exists, is
 readable, and evaluates as legal JSON is used as the source of configuration
 data.
 
-If your deplyment strategy does not make use of configuration files (e.g. you
+If your deployment strategy does not make use of configuration files (e.g. you
 access configuration data via a web service or similar API), you may also
 pass a list containing the configuration data directly via the \code{config}
 parameter.  In this case, no configuration files are used.
@@ -94,8 +98,8 @@ srcr()
 srcr('myproj_prod')
 
 # Look around
-srcr( dirs = c(Sys.getenv('PROJ_CONF_DIR'), 'var/lib', getwd()),
-           basenames = c('myproj', Sys.getenv('PROJ_NAME')) )
+srcr(dirs = c(Sys.getenv('PROJ_CONF_DIR'), 'var/lib', getwd()),
+     basenames = c('myproj', Sys.getenv('PROJ_NAME')) )
 
 # No defaults
 srcr(paths = c('/path/to/known/config.json'))

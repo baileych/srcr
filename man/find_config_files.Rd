@@ -4,12 +4,15 @@
 \alias{find_config_files}
 \title{Locate candidate configuration files}
 \usage{
-find_config_files(basenames = .basename.defaults(),
-  dirs = .dir.defaults(), suffices = .suffix.defaults())
+find_config_files(
+  basenames = .basename.defaults(),
+  dirs = .dir.defaults(),
+  suffices = .suffix.defaults()
+)
 }
 \arguments{
-\item{basenames}{A vector of file names to use in searching for configuration
-files.}
+\item{basenames}{A vector of file names (without directory or file type) to
+use in searching for configuration files.}
 
 \item{dirs}{A vector of directory names to use in searching for configuration
 files.}
@@ -28,7 +31,7 @@ combine them to find existing files.
 \details{
 This function is intended to support a variety of installation patterns, so
 it attempts to be flexible in looking for configuration files.  First,
-environment variables of the form \emph{basename}\code{_CONFIG}, where
+environment variables of the form \emph{basename}\verb{_CONFIG}, where
 \emph{basename} is the uppercase form of each candidate basename, are
 examined to see whether any translate to a file path.
 
@@ -36,10 +39,11 @@ Following this, the path name parts supplied as arguments are used to
 build potential file names.  If \code{dirs} is not specified, the
 following directories are checked by default:
 \enumerate{
-\item the user's \code{$HOME} directory
+\item the user's \verb{$HOME} directory
+\item the directory named \code{.srcr} (no leading \code{.} on Windows) under \verb{$HOME}
 \item the directory in which the executing script is located
 \item the directory in which the calling function's calling function's
-source file is located (typically an application-level library)    For
+source file is located (typically an application-level library). For
 example, if the function \code{my_setup()} calls \code{\link[=srcr]{srcr()}}, which in turn calls
 \code{\link[=find_config_files]{find_config_files()}}, then the directory of the file containing
 \code{my_setup()} will be tried.
@@ -55,8 +59,8 @@ In each location, the file names given in \code{basenames} are checked; if
 none are specified, several default file names are tried:
 \enumerate{
 \item the name of the calling function's source file
-2. the name of the executing script
-3. the directory in which the calling function's calling function's
+\item the name of the executing script
+\item the directory in which the calling function's calling function's
 source file is located (typically an application-level library).  For
 example, if the function \code{my_setup()} calls \code{\link[=srcr]{srcr()}}, which in turn calls
 \code{\link[=find_config_files]{find_config_files()}}, then the name of the file containing
