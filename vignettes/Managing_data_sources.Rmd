@@ -1,6 +1,6 @@
 ---
 title: "Managing Data Sources with srcr"
-author: "Charles Bailey <baileyc@email.chop.edu>"
+author: "Charles Bailey <baileyc@chop.edu>"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -11,10 +11,9 @@ vignette: >
 
 ## Setting up connections
 
-The [dplyr](https://cran.r-project.org/package=dplyr) package abstracts away many aspects of database interaction.  However, code that uses [dbplyr](https://cran.r-project.org/package=dbplyr) must construct an appropriate database connection, and use it to create any `tbl` instances that are used to access data.  This creates two problems for code that one might want to distribute.  First, the connection-building `dbConnect` or `src_whatever` statement typically contains credentials used to authenticate to the database server.  This creates a security risk, as sending around personal credentials isn't a good idea for a variety of reasons, and using the same "service credentials" for many users makes tracking usage more difficult.  It also makes it harder to reuse code, since it has to be edited to accommodate different users or different databases. Second, the connection info will often include other parameters, such as schema, data transfer settings, or the like.  Users have adopted a number of solutions to these problems, such as reading environment variables or sourcing a file in a known location.  Each works well in some circumstances, but runs into problems with scope or logistics in others.
+The [dbplyr](https://cran.r-project.org/package=dbplyr) package abstracts away many aspects of database interaction.  However, code that uses [dbplyr](https://cran.r-project.org/package=dbplyr) must construct an appropriate database connection, and use it to create any `dplyr::tbl()` instances that are used to access data.  This creates two problems for code that one might want to distribute.  First, the connection-building `DBI::dbConnect()` or `src_whatever` statement typically contains credentials used to authenticate to the database server.  This creates a security risk, as sending around personal credentials isn't a good idea for a variety of reasons, and using the same "service credentials" for many users makes tracking usage more difficult.  It also makes it harder to reuse code, since it has to be edited to accommodate different users or different databases. Second, the connection info will often include other parameters, such as schema, data transfer settings, or the like.  Users have adopted a number of solutions to these problems, such as reading environment variables or sourcing a file in a known location.  Each works well in some circumstances, but runs into problems with scope or logistics in others.
 
-The \pkg{srcr} package provides an alternative in this area that aims to be easy enough to use for straightforward cases, and flexible enough to adapt to complex projects and environments.  Its workhorse is the `srcr()` function.  As its documentation explains, `srcr()` is an adapter that lets you create a data source of a type known to [DBI](https://cran.r-project.org/package=DBI) or old-style [dplyr](https://cran.r-project.org/package=dplyr) connection functions,
-using configuration data passed to `srcr()`, or, more often, supplied in a configuration file.
+The {srcr} package provides an alternative in this area that aims to be easy enough to use for straightforward cases, and flexible enough to adapt to complex projects and environments.  Its workhorse is the `srcr()` function.  As its documentation explains, `srcr()` is an adapter that lets you create a data source of a type known to [DBI](https://cran.r-project.org/package=DBI) or old-style [dplyr](https://cran.r-project.org/package=dplyr) connection functions, using configuration data passed to `srcr()`, or, more often, supplied in a configuration file.
 
 ## Configuration structure
 
@@ -38,17 +37,28 @@ Here's a typical example:
 		    "port"     : 5432,
 		    "dbname"   : "project_db",
 		    "username" : "my_credential",
-		    "password" : "DontLook",
+		    "password" : "DontL00k@This",
 		    "options"  : "-c search_path=schema0,schema1,schema2"
-     }
+     },
+     "post_connect_sql" : [
+         "set role project_staff;"
+     ],
+     "post_connect_fun: [
+         "function (db) {",
+         "DBI::dbExecute(db, paste0('insert into connect_log (user, date) ',",
+         "   'values (\'', 'my_credential', '\', \'', Sys.Date(), '\')'))",
+         "set.seed(271828)",
+         "message('Session setup complete')",
+         "}"
+     ]
 }
 ```
 
-If you're deriving the configuration information programatically, you can pass it directly to `srcr()` via the `config` argument, but it's perhaps more common that configuration remains the same across different connections for a given project.  For these cases, srcr encourages separation of configuration from code.
+If you're deriving the configuration information programatically, you can pass it directly to `srcr()` via the `config` argument, but it's perhaps more common that configuration remains the same across different connections for a given project.  For these cases, {srcr} encourages separation of configuration from code.
 
 ### Post-connection setup
 
-Once the connection is established, there may be additional work to do.  For example, session settings may need to be altered, or schemas to search specified, or authorization roles changed.  There are two options that srcr provides to address this:
+Once the connection is established, there may be additional work to do.  For example, session settings may need to be altered, or schemas to search specified, or authorization roles changed.  There are two additional keys that srcr provides to address this:
 
 `post_connect_sql`
   : This option allows you to pass a series of SQL statements to the newly-established database session for execution.
@@ -66,15 +76,17 @@ In both cases, this makes it possible to execute additional code specified in th
 
 ## Finding configuration data
 
-The srcr package tries to provide you with a lot of flexibility in the way you deploy your code and configuration, by letting you get the latter to `srcr()` in a variety of ways.  The first option that returns valid JSON is used, and later options aren't checked; `srcr()` does not try to merge data from more than one source.
+The {srcr} package tries to provide you with a lot of flexibility in the way you deploy your code and configuration, by letting you get the latter to `srcr()` in a variety of ways.  The first option that returns valid JSON is used, and later options aren't checked; `srcr()` does not try to merge data from more than one source.
 
 ### Telling `srcr()` what to read directly
 
 If you know where your configuration data lives, you can point `srcr()` directly to it, using the `paths` argument.  This is a vector of paths to check, so you can provide a series of places to look, and `srcr()` will use the first one it finds.  Each place can be a path to a local file, or a URL that returns JSON.  (As an implementation detail, since `srcr()` uses [jsonlite::fromJSON](https://cran.r-project.org/package=jsonlite) under the hood, `paths` can also contain a JSON string rather than a pointer to outside configuration data.  We don't make any promises about this, as [jsonlite::fromJSON](https://cran.r-project.org/package=jsonlite) might change someday, but it can be a handy way to provide fallback configuration information after having `srcr()` check for an outside resource.)
 
+If you just want to supply the configuration data directly, or obtain it from a source that doesn't speak JSON, you can pass an appropriately-structured list of lists directly to `srcr()` via the `config` parameter, which overrides the search for configuration files.
+
 ### Searching for configuration files
 
-Through the `find_config_files()` function (implicitly called by `srcr()` if there's no `paths` or `config` provided), \pkg{srcr} tries to support a number of common deployment styles through its use of default search locations for configuration files.  For those who prefer per-user config files, it will look in your home directory.  If you prefer to deploy configuration data with your application, you can put the configuration file in the same directory as your main application program.  Finally, you can put the configuration file in the same directory as library code that calls `srcr()` either directly or through one intermediate call.  Note that the current working directory isn't in this search path by default; this is a measure intended to minimize the harm someone can cause by invoking your program in a working directory that might subvert the intended connection, either intentionally or through accidental use of a common configuration file name.
+Through the `find_config_files()` function (implicitly called by `srcr()` if there's no `paths` or `config` provided), {srcr} tries to support a number of common deployment styles through its use of default search locations for configuration files.  For those who prefer per-user config files, it will look in your home directory, or, for those who like to collect you config files out of the way, in `$HOME/.srcr`.  If you prefer to deploy configuration data with your application, you can put the configuration file in the same directory as your main application program.  Finally, you can put the configuration file in the same directory as library code that calls `srcr()` either directly or through one intermediate call.  Note that the current working directory isn't in this search path by default; this is a measure intended to minimize the harm someone can cause by invoking your program in a working directory that might subvert the intended connection, either intentionally or through accidental use of a common configuration file name.
 
 Similarly, `srcr()` will try by default to find files with the same basename as your application, or as the library file(s) making the call to `srcr()`.  Optionally, the file can have a "type" (i.e. suffix) of `.json` or `.conf`, or none at all.
 
@@ -82,13 +94,13 @@ If these options don't suit your deployment strategy, you can provide explicit h
 
 Finally, to accommodate convention on Unix-like systems, `find_config_files()` first checks for a "hidden" file with a leading `.` before checking for the plain basename.
 
-It's worth noting that `srcr()` expects any configuration files it finds to contain JSON, regardless of the file suffix. This was done to minimize the number of other packages that are prerequisites for \pkg{srcr}.  If you prefer another format, such as YAML or Apache, you can get there pretty easily (example simplfied a bit):
+It's worth noting that `srcr()` expects any configuration files it finds to contain JSON, regardless of the file suffix. This was done to minimize the number of other packages that are prerequisites for {srcr}.  If you prefer another format, such as YAML or Apache, you can get there pretty easily (example simplfied a bit):
 
 ```
 my_srcr <- function(...) {
     files <- find_config_files(...)
     mydata <- read_my_config_format(files)
-	srcr(config = mydata)
+	  srcr(config = mydata)
 }
 ```
 
