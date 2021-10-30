@@ -103,7 +103,7 @@ find_config_files <- function(basenames = .basename.defaults(),
         if (!is.na(config[1])) return(config)
     }
 
-    stop("No valid config files found in", paste(paths, collapse = ', '))
+    stop("No valid config files found in ", paste(paths, collapse = ', '))
 }
 
 
