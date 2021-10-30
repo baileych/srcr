@@ -12,6 +12,6 @@ test_that('Config file contents (JSON) can be parsed', {
 
 test_that('Missing config causes error', {
     expect_error(srcr:::.read_json_config('does/not/exist'),
-                 'No config files found')
+                 'No valid config files found.*')
 })
 
