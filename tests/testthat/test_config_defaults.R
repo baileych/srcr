@@ -17,6 +17,8 @@ that <- sub('\\.[^.]*$', '', utils::getSrcFilename(bounce.basename),
 test_that('Config file defaults are correct',{
     expect_equal(normalizePath(twostep.dir()),
                  c(Sys.getenv('HOME'),
+                   file.path(Sys.getenv('HOME'),
+                             ifelse(.Platform$OS.type == 'windows', 'srcr', '.srcr')),
                    here, there))
     expect_equal(twostep.basename(),
                  c(that, this))

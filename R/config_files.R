@@ -14,9 +14,10 @@
 #' following directories are checked by default:
 #'
 #'   1. the user's `$HOME` directory
+#'   2. the directory named `.srcr` (no leading `.` on Windows) under `$HOME`
 #'   2. the directory in which the executing script is located
 #'   3. the directory in which the calling function's calling function's
-#'      source file is located (typically an application-level library)    For
+#'      source file is located (typically an application-level library). For
 #'      example, if the function `my_setup()` calls [srcr()], which in turn calls
 #'      [find_config_files()], then the directory of the file containing
 #'      `my_setup()` will be tried.
@@ -44,8 +45,8 @@
 #' tradition of "hidden" configuration files, each basename is prefixed with
 #' a period before tryng the basename alone.
 #'
-#' @param basenames A vector of file names to use in searching for configuration
-#'   files.
+#' @param basenames A vector of file names (without directory or file type) to
+#' use in searching for configuration files.
 #' @param dirs A vector of directory names to use in searching for configuration
 #'   files.
 #' @param suffices A vector of suffices (file "type"s) to use in searching for
@@ -106,6 +107,8 @@ find_config_files <- function(basenames = .basename.defaults(),
 
 .dir.defaults <- function() {
     p <- c(Sys.getenv('HOME'),
+           file.path(Sys.getenv('HOME'),
+                     ifelse(.Platform$OS.type == 'windows', 'srcr', '.srcr')),
            unlist(lapply(c(1, sys.parent(3), sys.parent(2)),
                          function (x)
                              tryCatch(utils::getSrcDirectory(sys.function(x)),
