@@ -24,5 +24,6 @@ test_that('Proper DBI connection is set up by srcr()', {
     expect_is((mysrc <- get.con()), 'SQLiteConnection')
     expect_is((test.table <- copy_to(mysrc, test.data, name = 'test_table')),
               'tbl')
-    expect_equal(collect(tbl(mysrc,'test_table')), test.table)
+    expect_equal(tbl(mysrc,'test_table'), test.table)
+    if (any(class(mysrc) == 'SQLiteConnection')) DBI::dbDisconnect(mysrc)
 })

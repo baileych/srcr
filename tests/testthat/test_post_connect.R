@@ -6,13 +6,17 @@ has_sqlite <- function () {
 }
 
 get.con.yes <- function(tag) {
-  srcr(basenames = paste0('test_src_', tag),
-            dirs = c('config_etc'),
-            allow_post_connect = c('dummy', 'sql', 'fun'))
+  con <- srcr(basenames = paste0('test_src_', tag),
+              dirs = c('config_etc'),
+              allow_post_connect = c('dummy', 'sql', 'fun'))
+  withr::defer_parent(DBI::dbDisconnect(con))
+  con
 }
 get.con.no <- function(tag) {
-  srcr(basenames = paste0('test_src_', tag),
+  con <- srcr(basenames = paste0('test_src_', tag),
             dirs = c('config_etc'))
+  withr::defer_parent(DBI::dbDisconnect(con))
+  con
 }
 
 test.data <- data.frame(id = c(1L, 2L, 3L), str = c('a', 'b', 'c'),
@@ -22,7 +26,7 @@ test_that('Post-connect SQL executes if parameter permits', {
   has_sqlite()
   expect_is((mysrc <- get.con.yes('sql')), 'SQLiteConnection')
   expect_is((test.table <- tbl(mysrc,'test_table')), 'tbl')
-  expect_equal(collect(test.table), test.data)
+  expect_equal(as.data.frame(collect(test.table)), test.data)
 })
 
 test_that('Post-connect SQL executes if option permits', {
