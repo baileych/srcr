@@ -22,9 +22,9 @@ runtime environment.
 ## Installation
 
 You can install the current version of srcr from
-[CRAN](https://cran.r-project.org/web/packages/srcr/index.html).
-Development versions are hosted on
-[GitHub](https://github.com/baileych/srcr), and can be installed with:
+[CRAN](https://cran.r-project.org/package=srcr). Development versions
+are hosted on [GitHub](https://github.com/baileych/srcr), and can be
+installed with:
 
 ``` r
 require(devtools)
