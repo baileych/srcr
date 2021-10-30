@@ -36,7 +36,7 @@ test_that('Post-connect SQL executes if option permits', {
   options('srcr.allow_post_connect' = c('dummy', 'sql'))
   expect_is((mysrc <- get.con.no('sql')), 'SQLiteConnection')
   expect_is((test.table <- tbl(mysrc,'test_table')), 'tbl')
-  expect_equal(collect(test.table), test.data)
+  expect_equal(as.data.frame(collect(test.table)), test.data)
 })
 
 test_that('Post-connect SQL does not execute unless permitted', {
@@ -49,7 +49,7 @@ test_that('Post-connect function executes if parameter permits', {
   has_sqlite()
   expect_is((mysrc <- get.con.yes('fun')), 'SQLiteConnection')
   expect_is((test.table <- tbl(mysrc,'test_table')), 'tbl')
-  expect_equal(collect(test.table), test.data)
+  expect_equal(as.data.frame(collect(test.table)), test.data)
 })
 
 test_that('Post-connect function executes if option permits', {
@@ -59,7 +59,7 @@ test_that('Post-connect function executes if option permits', {
   options('srcr.allow_post_connect' = c('dummy', 'fun'))
   expect_is((mysrc <- get.con.no('fun')), 'SQLiteConnection')
   expect_is((test.table <- tbl(mysrc,'test_table')), 'tbl')
-  expect_equal(collect(test.table), test.data)
+  expect_equal(as.data.frame(collect(test.table)), test.data)
 })
 
 test_that('Post-connect function does not execute unless permitted', {
