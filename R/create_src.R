@@ -40,7 +40,7 @@
 #' @inheritParams find_config_files
 #' @param paths A vector of full path names for the configuration file.  If
 #'   present, only these paths are checked; [find_config_files()] is not called.
-#' @param config A list containg the configuration data, to be used instead of
+#' @param config A list containing the configuration data, to be used instead of
 #'   reading a configuration file, should you wish to skip that step.
 #' @param allow_post_connect A vector specifying what session setup you will
 #'   permit after the connection is established.  If any element of the vector
@@ -61,8 +61,8 @@
 #' srcr('myproj_prod')
 #'
 #' # Look around
-#' srcr( dirs = c(Sys.getenv('PROJ_CONF_DIR'), 'var/lib', getwd()),
-#'            basenames = c('myproj', Sys.getenv('PROJ_NAME')) )
+#' srcr(dirs = c(Sys.getenv('PROJ_CONF_DIR'), 'var/lib', getwd()),
+#'      basenames = c('myproj', Sys.getenv('PROJ_NAME')) )
 #'
 #' # No defaults
 #' srcr(paths = c('/path/to/known/config.json'))
