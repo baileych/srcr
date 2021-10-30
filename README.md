@@ -20,7 +20,8 @@ runtime environment.
 ## Installation
 
 You can install the current version of srcr from
-[GitHub](https://github.com) with:
+[CRAN](https://cran.org). Development versions are hosted on
+[GitHub](https://github.com), and can be installed with:
 
 ``` r
 require(devtools)
