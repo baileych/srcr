@@ -20,6 +20,6 @@ test_that('Config file defaults are correct',{
                    here, there))
     expect_equal(twostep.basename(),
                  c(that, this))
-    expect_equal(Argos:::.suffix.defaults(),
+    expect_equal(srcr:::.suffix.defaults(),
                  c('.json', '.conf', ''))
 })

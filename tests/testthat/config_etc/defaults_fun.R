@@ -1,11 +1,11 @@
 
 
 bounce.dir <- function () leap.dir()
-leap.dir <- function () Argos:::.dir.defaults()
+leap.dir <- function () srcr:::.dir.defaults()
 
 bounce.basename <- function () leap.basename()
-leap.basename <- function () Argos:::.basename.defaults()
+leap.basename <- function () srcr:::.basename.defaults()
 
 bounce.suffix <- function () leap.suffix()
-leap.suffix <- function () Argos:::.suffix.defaults()
+leap.suffix <- function () srcr:::.suffix.defaults()
 
