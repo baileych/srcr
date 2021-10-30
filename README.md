@@ -7,6 +7,8 @@
 
 [![R build
 status](https://github.com/baileych/srcr/workflows/R-CMD-check/badge.svg)](https://github.com/baileych/srcr/actions)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/srcr)](https://CRAN.R-project.org/package=srcr)
 <!-- badges: end -->
 
 Connecting to databases requires boilerplate code to specify connection
