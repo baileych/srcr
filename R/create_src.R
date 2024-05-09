@@ -94,7 +94,13 @@ srcr <- function(basenames = NA, dirs = NA, suffices = NA,
         config <- .read_json_config(paths)
     }
 
-    if (! grepl('^src_', config$src_name)) {
+  stopifnot(exprs = {
+    ! is.na(config)
+    is.character(config$src_name)
+    is.list(config$src_args)
+  })
+
+  if (! grepl('^src_', config$src_name)) {
         drv <- tryCatch(DBI::dbDriver(config$src_name), error = function(e) NULL)
         if (is.null(drv)) {
             lib <- tryCatch(library(config$src_name,
