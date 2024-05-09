@@ -15,4 +15,7 @@
 #' @import DBI
 #' @export srcr
 #' @export find_config_files
+#'
+#' @keywords internal
+"_PACKAGE"
 NULL
