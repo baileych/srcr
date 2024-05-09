@@ -77,8 +77,8 @@ srcr <- function(basenames = NA, dirs = NA, suffices = NA,
                  allow_post_connect =
                    getOption('srcr.allow_post_connect', c())) {
 
-    if (is.na(config)) {
-        if (is.na(paths)) {
+    if (all(is.na(config))) {
+        if (all(is.na(paths))) {
             args <- mget(c('dirs','basenames', 'suffices'))
             args <- args[ !is.na(args) ]
             paths <- do.call(find_config_files, args)
