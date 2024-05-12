@@ -1,3 +1,5 @@
+# srcr (development version)
+
 # srcr 1.1.1
 
 * Fix error in conditional triggereed by srcr(config = list(...))
