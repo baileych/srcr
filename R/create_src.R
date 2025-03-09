@@ -29,13 +29,23 @@
 #' pass a list containing the configuration data directly via the `config`
 #' parameter.  In this case, no configuration files are used.
 #'
-#' Once the connection is established, the `post_connect_sql` and
-#' `post_connect_fun` elements of the configuration data can be used to perform
-#' additional processing to set session characteristics, roles, etc.  However,
-#' because this entails the configuration file providing code that you won't see
-#' prior to runtime, you need to opt in to these features.  You can make this
-#' choice globally by setting the `srcr.allow_post_connect` option via
-#' [base::options()].
+#' Because some uses may require additional actions, such as setting up
+#' environment variables, external authentication, or initialization work within
+#' the database session, you may include code to be executed in your
+#' configuration file.  The `pre_connect_fun` element, if present, should be an
+#' array of text that will be joined linewise and evaluated as R source code. It
+#' must define an anonymouis function which will be called with one argument,
+#' the content of the config file.  If this function returns a DBI connection,
+#' the srcr will skip the default process for creating a connection and use this
+#' instead. Any other non-NA return value replaces the configuration data
+#' originally read from the file during further steps.  Once the connection is
+#' established, the `post_connect_sql` and `post_connect_fun` elements of the
+#' configuration data can be used to perform  additional processing to set
+#' session characteristics, roles, etc.  However,  because this entails the
+#' configuration file providing code that you won't see  prior to runtime, you
+#' need to opt in to these features.  You can make this choice globally by
+#' setting the `srcr.allow_config_code` option via  [base::options()], or you
+#' can enable it on a per-call basis with the `allow_config_code` parameter.
 #'
 #' @inheritParams find_config_files
 #' @param paths A vector of full path names for the configuration file.  If
@@ -94,11 +104,18 @@ srcr <- function(basenames = NA, dirs = NA, suffices = NA,
         config <- .read_json_config(paths)
     }
 
-  stopifnot(exprs = {
-    ! is.na(config)
-    is.character(config$src_name)
-    is.list(config$src_args)
-  })
+    stopifnot(exprs = {
+      ! is.na(config)
+      is.character(config$src_name)
+      is.list(config$src_args)
+    })
+
+    if (any(allow_config_code == 'fun') &&
+        exists('pre_connect_fun', where = config)) {
+        pc <- eval(parse(text = paste(config$pre_connect_fun,
+                                      sep = "\n", collapse = "\n")))
+        db <- do.call(pc, list(config))
+    } else db <- NA
 
   if (! grepl('^src_', config$src_name)) {
         drv <- tryCatch(DBI::dbDriver(config$src_name), error = function(e) NULL)
