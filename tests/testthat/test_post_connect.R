@@ -8,7 +8,7 @@ has_sqlite <- function () {
 get.con.yes <- function(tag) {
   con <- srcr(basenames = paste0('test_src_', tag),
               dirs = c('config_etc'),
-              allow_post_connect = c('dummy', 'sql', 'fun'))
+              allow_config_code = c('dummy', 'sql', 'fun'))
   withr::defer_parent(DBI::dbDisconnect(con))
   con
 }
@@ -24,46 +24,46 @@ test.data <- data.frame(id = c(1L, 2L, 3L), str = c('a', 'b', 'c'),
 
 test_that('Post-connect SQL executes if parameter permits', {
   has_sqlite()
-  expect_is((mysrc <- get.con.yes('sql')), 'SQLiteConnection')
+  expect_is((mysrc <- get.con.yes('postsql')), 'SQLiteConnection')
   expect_is((test.table <- tbl(mysrc,'test_table')), 'tbl')
   expect_equal(as.data.frame(collect(test.table)), test.data)
 })
 
 test_that('Post-connect SQL executes if option permits', {
   has_sqlite()
-  oldopt = getOption('srcr.allow_post_connect')
-  on.exit(options('srcr.allow_post_connect' = oldopt))
-  options('srcr.allow_post_connect' = c('dummy', 'sql'))
-  expect_is((mysrc <- get.con.no('sql')), 'SQLiteConnection')
+  oldopt = getOption('srcr.allow_config_code')
+  on.exit(options('srcr.allow_config_code' = oldopt))
+  options('srcr.allow_config_code' = c('dummy', 'sql'))
+  expect_is((mysrc <- get.con.no('postsql')), 'SQLiteConnection')
   expect_is((test.table <- tbl(mysrc,'test_table')), 'tbl')
   expect_equal(as.data.frame(collect(test.table)), test.data)
 })
 
 test_that('Post-connect SQL does not execute unless permitted', {
   has_sqlite()
-  expect_is((mysrc <- get.con.no('sql')), 'SQLiteConnection')
+  expect_is((mysrc <- get.con.no('postsql')), 'SQLiteConnection')
   expect_error(tbl(mysrc,'test_table'), 'no such table')
 })
 
 test_that('Post-connect function executes if parameter permits', {
   has_sqlite()
-  expect_is((mysrc <- get.con.yes('fun')), 'SQLiteConnection')
+  expect_is((mysrc <- get.con.yes('postfun')), 'SQLiteConnection')
   expect_is((test.table <- tbl(mysrc,'test_table')), 'tbl')
   expect_equal(as.data.frame(collect(test.table)), test.data)
 })
 
 test_that('Post-connect function executes if option permits', {
   has_sqlite()
-  oldopt = getOption('srcr.allow_post_connect')
-  on.exit(options('srcr.allow_post_connect' = oldopt))
-  options('srcr.allow_post_connect' = c('dummy', 'fun'))
-  expect_is((mysrc <- get.con.no('fun')), 'SQLiteConnection')
+  oldopt = getOption('srcr.allow_config_code')
+  on.exit(options('srcr.allow_config_code' = oldopt))
+  options('srcr.allow_config_code' = c('dummy', 'fun'))
+  expect_is((mysrc <- get.con.no('postfun')), 'SQLiteConnection')
   expect_is((test.table <- tbl(mysrc,'test_table')), 'tbl')
   expect_equal(as.data.frame(collect(test.table)), test.data)
 })
 
 test_that('Post-connect function does not execute unless permitted', {
   has_sqlite()
-  expect_is((mysrc <- get.con.no('fun')), 'SQLiteConnection')
+  expect_is((mysrc <- get.con.no('postfun')), 'SQLiteConnection')
   expect_error(tbl(mysrc,'test_table'), 'no such table')
 })
