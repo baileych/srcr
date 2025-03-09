@@ -52,12 +52,14 @@
 #'   present, only these paths are checked; [find_config_files()] is not called.
 #' @param config A list containing the configuration data, to be used instead of
 #'   reading a configuration file, should you wish to skip that step.
-#' @param allow_post_connect A vector specifying what session setup you will
-#'   permit after the connection is established.  If any element of the vector
+#' @param allow_config_code A vector specifying what session setup you will
+#'   permit via code contained in the config.  If any element of the vector
 #'   is `sql`, then the post_connect_sql section of the configuration file is
-#'   executed.  Similarly, if any element is `fun`, then the post_connect_fun
-#'   section of the config file is executed (after post_connect_sql, if both are
-#'   present and allowed).
+#'   executed aftern the connection is established. If any element is `fun`,
+#'   then the pre- and post-connection functions will be executed (see above).
+#' @param allow_post_connect *Deprecated* This has been superseded by the more
+#'   generally-functional `allow_config_code` parameter.  It currently
+#'   generates a warning when used, and will be removed in a future version.
 #'
 #' @return A database connection.  The specific class of the object is determined
 #'   by the `src_name` in the configuration data.
@@ -84,8 +86,14 @@
 #' @export
 srcr <- function(basenames = NA, dirs = NA, suffices = NA,
                  paths = NA, config = NA,
-                 allow_post_connect =
-                   getOption('srcr.allow_post_connect', c())) {
+                 allow_post_connect = getOption('srcr.allow_post_connect', c()),
+                 allow_config_code =  getOption('srcr.allow_config_code',
+                                                allow_post_connect)) {
+
+    # Avoid lifecycle's deprecated() and is_present(), which malfunction
+    if (length(allow_post_connect) > 0)
+        lifecycle::deprecate_warn('2.0', 'srcr(allow_post_connect = )',
+                                  'srcr(allow_config_code = )')
 
     if (all(is.na(config))) {
         if (all(is.na(paths))) {
@@ -117,27 +125,30 @@ srcr <- function(basenames = NA, dirs = NA, suffices = NA,
         db <- do.call(pc, list(config))
     } else db <- NA
 
-  if (! grepl('^src_', config$src_name)) {
-        drv <- tryCatch(DBI::dbDriver(config$src_name), error = function(e) NULL)
-        if (is.null(drv)) {
-            lib <- tryCatch(library(config$src_name,
-                                    character.only = TRUE),
-                            error = function(e) NULL)
-            if (is.null(lib))
-                library(paste0('R', config$src_name), character.only = TRUE)
-            drv <- DBI::dbDriver(config$src_name)
+    if (!isa(db, 'DBIConnection')) {
+        if (!all(is.na(db))) config <- db
+        if (! grepl('^src_', config$src_name)) {
+            drv <- tryCatch(DBI::dbDriver(config$src_name), error = function(e) NULL)
+            if (is.null(drv)) {
+                lib <- tryCatch(library(config$src_name,
+                                        character.only = TRUE),
+                                error = function(e) NULL)
+                if (is.null(lib))
+                    library(paste0('R', config$src_name), character.only = TRUE)
+                drv <- DBI::dbDriver(config$src_name)
+            }
+            config$src_name <- function(...) DBI::dbConnect(drv,...)
         }
-        config$src_name <- function(...) DBI::dbConnect(drv,...)
+
+        db <- do.call(config$src_name, config$src_args)
     }
 
-    db <- do.call(config$src_name, config$src_args)
-
-    if (any(allow_post_connect == 'sql') &&
+    if (any(allow_config_code == 'sql') &&
         exists('post_connect_sql', where = config)) {
         con <- if (inherits(db, 'src_dbi')) db$con else db
         lapply(config$post_connect_sql, function(x) DBI::dbExecute(con, x))
     }
-    if (any(allow_post_connect == 'fun') &&
+    if (any(allow_config_code == 'fun') &&
         exists('post_connect_fun', where = config)) {
         pc <- eval(parse(text = paste(config$post_connect_fun,
                                       sep = "\n", collapse = "\n")))
