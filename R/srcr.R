@@ -13,6 +13,7 @@
 #'
 #' @import dplyr
 #' @import DBI
+#' @importFrom lifecycle deprecated
 #' @export srcr
 #' @export find_config_files
 #'
