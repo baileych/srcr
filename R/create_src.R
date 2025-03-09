@@ -57,9 +57,10 @@
 #'   is `sql`, then the post_connect_sql section of the configuration file is
 #'   executed aftern the connection is established. If any element is `fun`,
 #'   then the pre- and post-connection functions will be executed (see above).
-#' @param allow_post_connect *Deprecated* This has been superseded by the more
-#'   generally-functional `allow_config_code` parameter.  It currently
-#'   generates a warning when used, and will be removed in a future version.
+#' @param allow_post_connect `r lifecycle::badge('deprecated')`
+#'   This has been superseded by the more  generally functional
+#'   `allow_config_code` parameter.  It currently generates a warning when used,
+#'   and will be removed in a future version.
 #'
 #' @return A database connection.  The specific class of the object is determined
 #'   by the `src_name` in the configuration data.
