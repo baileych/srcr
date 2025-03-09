@@ -1,7 +1,7 @@
 Package: srcr
 Type: Package
 Title: Simplify Connections to Database Sources
-Version: 1.1.1.9000
+Version: 1.9.9.9000
 Authors@R: c(person('Charles', 'Bailey', email = 'baileyc@chop.edu',
                     role = c('aut', 'cre')),
              person('Hanieh', 'Razzaghi', email = 'razzaghih@chop.edu',
