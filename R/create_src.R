@@ -81,9 +81,11 @@
 #' srcr(config =
 #'        list(src_name = 'Postgres',
 #'             src_args = list(host = 'my.host', dbname = 'my_db', user = 'me'),
-#'             post_connect_sql = 'set role project_role;'))
+#'             post_connect_sql = 'set role project_role;'),
+#'             allow_config_code = 'sql')
 #' }
 #' @export
+#' @md
 srcr <- function(basenames = NA, dirs = NA, suffices = NA,
                  paths = NA, config = NA,
                  allow_post_connect = getOption('srcr.allow_post_connect', c()),
