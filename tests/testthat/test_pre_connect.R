@@ -19,32 +19,31 @@ get.con.no <- function(tag) {
   con
 }
 
-test.data <- data.frame(id = c(1L, 2L, 3L), str = c('a', 'b', 'c'),
+test.data <- data.frame(id = c(1L, 2L, 3L), str = c('a', 'b', 'test_'),
                         stringsAsFactors = FALSE)
-pre.data <- data.frame(id = c(1L, 2L, 3L), tag = c('d', 'e', 'f'),
+pre.data <- data.frame(id = c(1L, 2L, 3L), tag = c('a', 'b', 'pre_'),
                         stringsAsFactors = FALSE)
 test_that('Pre-connect function executes if parameter permits', {
   has_sqlite()
-  precall <<- NA
   expect_is((mysrc <- get.con.yes('prenodb')), 'SQLiteConnection')
-  expect_true(precall)
+  expect_is((pre.table <- tbl(mysrc,'pre_table')), 'tbl')
+  expect_equal(as.data.frame(collect(pre.table)), pre.data)
 })
 
 test_that('Pre-connect function executes if option permits', {
   has_sqlite()
-  precall <<- NA
   oldopt = getOption('srcr.allow_config_code')
   on.exit(options('srcr.allow_config_code' = oldopt))
   options('srcr.allow_config_code' = c('dummy', 'fun'))
   expect_is((mysrc <- get.con.no('prenodb')), 'SQLiteConnection')
-  expect_true(precall)
+  expect_is((pre.table <- tbl(mysrc,'pre_table')), 'tbl')
+  expect_equal(as.data.frame(collect(pre.table)), pre.data)
 })
 
 test_that('Pre-connect function does not execute unless permitted', {
   has_sqlite()
-  precall <<- NA
   expect_is((mysrc <- get.con.no('predb')), 'SQLiteConnection')
-  expect_true(is.na(precall))
+  expect_error((pre.table <- tbl(mysrc,'pre_table')), 'no such table')
 })
 
 test_that('Pre-connect function can replace connection', {

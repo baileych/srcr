@@ -5,6 +5,18 @@
       "create" : true
     },
     "pre_connect_fun" : [
-      "function(conf) { precall <<- TRUE; conf }"
+      "function(conf) {",
+      "conf$post_connect_fun <- ",
+      "gsub('test_', 'pre_', sub('str', 'tag', conf$post_connect_fun)) ",
+      "conf }"
+    ],
+    "post_connect_fun" : [
+      "function(db) {",
+      "DBI::dbExecute(db, 'create table test_table (id int, str varchar);')",
+      "DBI::dbExecute(db, \"insert into test_table (id, str) values (1, 'a');\")",
+      "DBI::dbExecute(db, \"insert into test_table (id, str) values (2, 'b');\")",
+      "DBI::dbExecute(db, \"insert into test_table (id, str) values (3, 'test_');\")",
+      "db }"
     ]
+
 }

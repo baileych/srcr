@@ -8,9 +8,9 @@
       "function(conf) {",
       "db <- DBI::dbConnect(DBI::dbDriver(conf$src_name), path = ':memory:', create = TRUE)",
       "DBI::dbExecute(db, 'create table pre_table (id int, tag varchar);')",
-      "DBI::dbExecute(db, \"insert into pre_table (id, tag) values (1, 'd');\")",
-      "DBI::dbExecute(db, \"insert into pre_table (id, tag) values (2, 'e');\")",
-      "DBI::dbExecute(db, \"insert into pre_table (id, tag) values (3, 'f');\")",
+      "DBI::dbExecute(db, \"insert into pre_table (id, tag) values (1, 'a');\")",
+      "DBI::dbExecute(db, \"insert into pre_table (id, tag) values (2, 'b');\")",
+      "DBI::dbExecute(db, \"insert into pre_table (id, tag) values (3, 'pre_');\")",
       "db }"
     ],
     "post_connect_fun" : [
@@ -18,7 +18,7 @@
       "DBI::dbExecute(db, 'create table test_table (id int, str varchar);')",
       "DBI::dbExecute(db, \"insert into test_table (id, str) values (1, 'a');\")",
       "DBI::dbExecute(db, \"insert into test_table (id, str) values (2, 'b');\")",
-      "DBI::dbExecute(db, \"insert into test_table (id, str) values (3, 'c');\")",
+      "DBI::dbExecute(db, \"insert into test_table (id, str) values (3, 'test_');\")",
       "db }"
     ]
 }
