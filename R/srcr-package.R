@@ -8,9 +8,6 @@
 #' in a persistent and flexible way, while minimizing requirements on the
 #' runtime environment.
 #'
-#' @docType package
-#' @name srcr
-#'
 #' @import dplyr
 #' @import DBI
 #' @importFrom lifecycle deprecated
