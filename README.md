@@ -5,11 +5,9 @@
 
 <!-- badges: start -->
 
-[![R build
-status](https://github.com/baileych/srcr/workflows/R-CMD-check/badge.svg)](https://github.com/baileych/srcr/actions)
+[![R-CMD-check](https://github.com/baileych/srcr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/baileych/srcr/actions/workflows/R-CMD-check.yaml)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/srcr)](https://CRAN.R-project.org/package=srcr)
-[![R-CMD-check](https://github.com/baileych/srcr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/baileych/srcr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 Connecting to databases requires boilerplate code to specify connection
