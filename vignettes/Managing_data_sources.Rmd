@@ -52,8 +52,7 @@ object define the database connection.
     `SQLite`or `PostgreSQL` (N.B. the initial `R` in the package name is not
     included).  For historical reasons, the name of an old-style
     [dplyr](https://cran.r-project.org/package=dplyr) function used to construct
-    a data source, typically a database connection, such as `src_postgres` or
-    `src_mysql` may be used as well..
+    a data source, typically a database connection.
 
 `src_args`
   : a list, where the keys are names of arguments to the constructor, and th

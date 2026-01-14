@@ -9,7 +9,7 @@
 #'
 #' * The `src_name` key points to a string containing name of a DBI driver
 #'   method (e.g. `SQLite`), as one might pass to [DBI::dbDriver()], or an old-style
-#'   dplyr function that sets up the data source (e.g.  [dplyr::src_postgres()].
+#'   dplyr function that sets up the data source.
 #'   If the value associated with `src_name` begins with 'src_', it is taken as the
 #'   latter, otherwise it is taken as the former.  In this case, an attempt will
 #'   be made to load the appropriate DBI-compliant database library (e.g. RSQLite

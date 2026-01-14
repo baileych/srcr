@@ -56,7 +56,7 @@ can be specified, the JSON must be a hash containing at least two elements:
 \itemize{
 \item The \code{src_name} key points to a string containing name of a DBI driver
 method (e.g. \code{SQLite}), as one might pass to \code{\link[DBI:dbDriver]{DBI::dbDriver()}}, or an old-style
-dplyr function that sets up the data source (e.g.  \code{\link[dplyr:src_dbi]{dplyr::src_postgres()}}.
+dplyr function that sets up the data source.
 If the value associated with \code{src_name} begins with 'src_', it is taken as the
 latter, otherwise it is taken as the former.  In this case, an attempt will
 be made to load the appropriate DBI-compliant database library (e.g. RSQLite
