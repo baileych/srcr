@@ -7,13 +7,13 @@
 #' up the DBI connection or dplyr src.  Given the variety of ways a data source
 #' can be specified, the JSON must be a hash containing at least two elements:
 #'
-#' * The `src_name` key points to a string containing name of a DBI driver
-#'   method (e.g. `SQLite`), as one might pass to [DBI::dbDriver()], or an old-style
-#'   dplyr function that sets up the data source (e.g.  [dplyr::src_postgres()].
-#'   If the value associated with `src_name` begins with 'src_', it is taken as the
-#'   latter, otherwise it is taken as the former.  In this case, an attempt will
-#'   be made to load the appropriate DBI-compliant database library (e.g. RSQLite
-#'   for the above example) if it hasn't already been loaded.
+#' * The `src_name` key typically points to a string containing name of a DBI
+#'   driver method (e.g. `SQLite`), as one might pass to [DBI::dbDriver()].
+#'   In this case, an attempt will be made to load the appropriate DBI-compliant
+#'   database library (e.g. RSQLite for the above example) if it hasn't already
+#'   been loaded. If the value associated with `src_name` begins with 'src_',
+#'   it is taken as the name of a function to call directly, rather than a DBI
+#'   class name.
 #' * The `src_args` key points to a nested hash, whose keys are the arguments
 #'   to that function, and whose values are the argument values.
 #'

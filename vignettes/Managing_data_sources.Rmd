@@ -17,7 +17,7 @@ many aspects of database interaction.  However, code that uses
 appropriate database connection, and use it to create any `dplyr::tbl()`
 instances that are used to access data.  This creates two problems for code that
 one might want to distribute.  First, the connection-building `DBI::dbConnect()`
-or `src_whatever` statement typically contains credentials used to authenticate
+statement typically contains credentials used to authenticate
 to the database server.  This creates a security risk, as sending around
 personal credentials isn't a good idea for a variety of reasons, and using the
 same "service credentials" for many users makes tracking usage more difficult.
@@ -47,13 +47,10 @@ hash), which is translated into a list structure within R.  Two keys from the
 object define the database connection.
 
 `src_name`
-  : either the name of a driver function compatible with the
+  : the name of a driver function compatible with the
     [DBI](https://cran.r-project.org/package=DBI) specification, such as
     `SQLite`or `PostgreSQL` (N.B. the initial `R` in the package name is not
-    included).  For historical reasons, the name of an old-style
-    [dplyr](https://cran.r-project.org/package=dplyr) function used to construct
-    a data source, typically a database connection, such as `src_postgres` or
-    `src_mysql` may be used as well..
+    included).
 
 `src_args`
   : a list, where the keys are names of arguments to the constructor, and th
